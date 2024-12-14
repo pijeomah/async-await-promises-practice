@@ -70,51 +70,111 @@ let stocks = {
 // })
 
 
-let openShop = true
-// the time function returns a Promise which resolves if openShop is true and rejects if it is false 
-function time(ms){
-return new Promise((resolve,reject) => {
-    if(openShop){
-        setTimeout(resolve,ms)
-    }else{
-        reject(console.log(`Shop is closed`))
+// let openShop = true
+// // the time function returns a Promise which resolves if openShop is true and rejects if it is false 
+// function time(ms){
+// return new Promise((resolve,reject) => {
+//     if(openShop){
+//         setTimeout(resolve,ms)
+//     }else{
+//         reject(console.log(`Shop is closed`))
+//     }
+// })
+// }
+
+// async function kitchen(){
+//     try {
+//         await time(2000)
+//         console.log(`${stocks.Fruits[2]} was selected`)
+
+//         await time(0)
+//         console.log(`production has started`)
+
+//         await time(2000)
+//         console.log(`Fruit has been chopped`)
+
+//         await time(1000)
+//         console.log(`${stocks.liquid[0]} and ${stocks.liquid[1]} have been added `)
+
+//         await time(1000)
+//         console.log("start the machine")
+
+//         await time(2000)
+//         console.log(`Ice cream has been placed in ${stocks.holder[1]} `)
+
+//         await time(3000)
+//         console.log(`${stocks.toppings[0]} and ${stocks.toppings[1]} have been added `)
+
+//         await time(2000)
+//         console.log(`Ice cream is ready`)
+
+
+//     } catch (error) {
+//         console.log('Customer left')
+//     }
+//     finally{
+//         console.log(`Day ended, shop closed`)
+//     }
+// }
+
+// kitchen()
+
+// Simulates an asynchronous operation (e.g., fetching data)
+
+//async function to run a task mulltiple times if it fails 
+//retry function accepts two parameters function and the number of retries
+async function retry(fn, retries = 3){
+    //declare a variable 
+    let lastError
+    //create a for loop that starts at 1 and uses the retries variable as the coditional expression
+    for(let attempt = 1; attempt <= retries; attemp++ ){
+        //try block that holds the task that is supposed to run
+        try {
+            return await fn()
+        } catch (error) {
+            //lastError is assigned to the error caugght in the catch block
+            lastError = error
+            console.log(`Attempt ${attempt} failed. Retrying...`)
+        }
+        
     }
-})
+    throw lastError
+}
+function fetchData(endpoint) {
+
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if (Math.random() > 0.2) {
+                resolve(`Data from ${endpoint}`);
+            } else {
+                reject(`Error fetching data from ${endpoint}`);
+            }
+        }, 1000);
+    });
 }
 
-async function kitchen(){
+async function fetchWithRetry(endpoint,){
+    return retry(() => fetchData(endpoint,3))
+}
+
+// Function to process fetched data
+async function processData(data) {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(`Processed: ${data}`), 500);
+    });
+}
+
+// Main function to fetch and process data from multiple endpoints
+async function fetchAndProcessData() {
+    const endpoints = ['endpoint1', 'endpoint2', 'endpoint3'];
+
     try {
-        await time(2000)
-        console.log(`${stocks.Fruits[2]} was selected`)
-
-        await time(0)
-        console.log(`production has started`)
-
-        await time(2000)
-        console.log(`Fruit has been chopped`)
-
-        await time(1000)
-        console.log(`${stocks.liquid[0]} and ${stocks.liquid[1]} have been added `)
-
-        await time(1000)
-        console.log("start the machine")
-
-        await time(2000)
-        console.log(`Ice cream has been placed in ${stocks.holder[1]} `)
-
-        await time(3000)
-        console.log(`${stocks.toppings[0]} and ${stocks.toppings[1]} have been added `)
-
-        await time(2000)
-        console.log(`Ice cream is ready`)
-
-
+        const fetchPromises = endpoints.map(fetchData);
+        const results = await Promise.all(fetchPromises);
+        const processPromises = results.map(processData);
+        const finalResults = await Promise.all(processPromises);
+        console.log(finalResults);
     } catch (error) {
-        console.log('Customer left')
-    }
-    finally{
-        console.log(`Day ended, shop closed`)
+        console.error('Error during fetch or process:', error);
     }
 }
-
-kitchen()

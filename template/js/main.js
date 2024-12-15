@@ -123,58 +123,58 @@ let stocks = {
 
 //async function to run a task mulltiple times if it fails 
 //retry function accepts two parameters function and the number of retries
-async function retry(fn, retries = 3){
-    //declare a variable 
-    let lastError
-    //create a for loop that starts at 1 and uses the retries variable as the coditional expression
-    for(let attempt = 1; attempt <= retries; attemp++ ){
-        //try block that holds the task that is supposed to run
-        try {
-            return await fn()
-        } catch (error) {
-            //lastError is assigned to the error caugght in the catch block
-            lastError = error
-            console.log(`Attempt ${attempt} failed. Retrying...`)
-        }
-        
-    }
-    throw lastError
-}
-function fetchData(endpoint) {
 
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (Math.random() > 0.2) {
-                resolve(`Data from ${endpoint}`);
-            } else {
-                reject(`Error fetching data from ${endpoint}`);
+//Food ordering system
+const menu = {
+    items: [
+        { name: "Burger", price: 5.99, available: true, preparationTime: 10 },
+        { name: "Pizza", price: 7.99, available: true, preparationTime: 15 },
+        { name: "Ice Cream", price: 3.49, available: false, preparationTime: 5 },
+        { name: "Taco", price: 2.99, available: true, preparationTime: 7 },
+    ],
+};
+
+async function fetchMenu(){
+    return new Promise((resolve,reject) =>{
+        setTimeout(()=> {
+            const success = Math.random() > 0.5
+            if(success){
+                const availabeItems = menu.items.filter((item) => item.available)
+                resolve(availableItems)
+            }else{
+                reject(`Failed to fetch menu`)
             }
-        }, 1000);
-    });
+        },1000)
+    })
 }
 
-async function fetchWithRetry(endpoint,){
-    return retry(() => fetchData(endpoint,3))
-}
 
-// Function to process fetched data
-async function processData(data) {
-    return new Promise((resolve) => {
-        setTimeout(() => resolve(`Processed: ${data}`), 500);
-    });
-}
 
-// Main function to fetch and process data from multiple endpoints
-async function fetchAndProcessData() {
-    const endpoints = ['endpoint1', 'endpoint2', 'endpoint3'];
 
-    try {
-        const fetchPromises = endpoints.map(fetchData);
-        const results = await Promise.all(fetchPromises);
-        const processPromises = results.map(processData);
-        const finalResults = await Promise.all(processPromises);
-        console.log(finalResults);
-    } catch (error) {
-        console.error('Error during fetch or process:', error);
-    }
+async function placeOrder(itemName,maxPrice){
+    return new Promise((resolve,reject) =>{
+            setTimeout(() => {
+                const item = menu.items.find((menuItem) => menuItem.name === itemName)
+
+                if(!item){
+                    return reject(`${itemName} not found on the menu`)
+                }
+                if(!item.available){
+                    return reject(`${itemName} is currently unavailable`)
+                }
+               if(item.price > maxPrice){
+                return reject(`${itemName} costs ${item.price.toFixed(2)} which exceeds ${maxPrice.toFixed(2)}`)
+               }
+
+               const success = Math.random() > 0.3
+               if(success){
+                resolve(`Order for ${itemNAme} has been placed successfully`)
+               }else{
+                reject(`Failed to place order for ${itemName}`)
+               }
+            })
+    })
+       
+
+    
 }

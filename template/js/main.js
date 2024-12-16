@@ -134,23 +134,21 @@ const menu = {
     ],
 };
 
-async function fetchMenu(){
-    return new Promise((resolve,reject) =>{
-        setTimeout(()=> {
-            const success = Math.random() > 0.5
-            if(success){
-                const availabeItems = menu.items.filter((item) => item.available)
-                resolve(availableItems)
-            }else{
-                reject(`Failed to fetch menu`)
-            }
-        },1000)
-    })
-}
 
-
-
-
+// async function fetchMenu(){
+//     return new Promise((resolve,reject) =>{
+//         setTimeout(()=> {
+//             const success = Math.random() > 0.5
+//             if(success){
+//                 const availableItems = menu.items.filter((item) => item.available)
+//                 resolve(availableItems)
+//             }else{
+//                 reject(`Failed to fetch menu`)
+//             }
+//         },1000)
+//     })
+// }
+ 
 async function placeOrder(itemName,maxPrice){
     return new Promise((resolve,reject) =>{
             setTimeout(() => {
@@ -172,9 +170,54 @@ async function placeOrder(itemName,maxPrice){
                }else{
                 reject(`Failed to place order for ${itemName}`)
                }
-            })
+            },2000)
     })
-       
-
     
 }
+console.log()
+
+// async function retry(fn, retries = 4){
+//     let lastError
+//     for(let attempt = 1; attempt <= retries; attempt++){
+//         try {
+//             return await fn()
+//         } catch (error) {
+//             lastError = error
+//             console.log(`Attempt  ${attempt} has failed`)
+//         }
+
+//     }
+
+//     throw lastError
+
+
+// }
+
+// async function prepFood(itemName){
+//     return new Promise((resolve,reject) =>{
+//         resolve(`${itemName} is being prepared`)
+//     })
+// }
+
+// async function foodOrderingSystem(){
+//     try {
+//         const availableMenu = await fetchMenu() 
+//         console.log("Menu fetched", availableMenu.map(item => item.name))
+//         const maxBudget = 6
+//         for (const item of availableMenu){
+//             try {
+//               const orderResults = await retry(() => placeOrder(item.name, maxBudget), 4) 
+//               console.log(orderResults) 
+//               const prepResults = await prepFood(item.name)
+//               console.log(prepResults)
+//             } catch (error) {
+//                 console.log(`Could not place order for ${item.name}`)
+                
+//             }
+//         }
+//     } catch (error) {
+//         console.log('Failed to fetch menu')
+//     }
+// }
+
+// foodOrderingSystem()
